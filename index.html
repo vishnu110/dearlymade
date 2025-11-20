@@ -58,7 +58,6 @@
     a{color:inherit;text-decoration:none}
 
     /* Header */
-
     header {
     --hbg: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(6px);
@@ -75,7 +74,7 @@
     transition: height 200ms;
     box-shadow: 0 6px 18px rgba(60, 50, 50, 0.06);
     transition: all 0.3s ease;
-}
+    }
     
     .nav{
       width:1200px;
@@ -212,13 +211,45 @@
     .socials{display:flex;gap:8px;margin-top:8px}
 
     /* WhatsApp floating */
-    .whatsapp{position:fixed;right:18px;bottom:18px;background:#25D366;color:white;padding:12px;border-radius:14px;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(37,211,102,0.14);z-index:1400}
+    .whatsapp{position:fixed;right:18px;bottom:18px;background: rgba(247, 221, 226, 0.818);  /* 0.0 to 1.0 */;color:white;padding:12px;border-radius:14px;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(37,211,102,0.14);z-index:1400}
 
     /* Product modal */
-    .modal{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(60,50,50,0.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:1500; padding-top: var(--header-offset);}
+    .modal{
+        position:fixed;
+        left:0;
+        right:0;
+        top:0;
+        bottom:0;
+        background:rgba(60,50,50,0.4);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        z-index:1500; 
+        /* Removed padding-top so it centers vertically on screen */
+    }
     .modal.open{display:flex}
-    .modal-dialog{background:#fff;border-radius:16px;max-width:980px;width:100%;display:grid;grid-template-columns:420px 1fr;gap:20px;padding:18px; max-height: calc(100vh - var(--header-offset) - 20px); overflow: auto;}
-    .gallery img{width:100%;height:360px;object-fit:cover;border-radius:12px}
+    
+    .modal-dialog{
+        background:#fff;
+        border-radius:16px;
+        max-width:980px;
+        width:100%;
+        display:grid;
+        grid-template-columns:420px 1fr;
+        gap:20px;
+        padding:18px;
+        max-height: 90vh; /* Use VH instead of calc for better centering */
+        overflow: auto;
+    }
+    
+    .gallery img{
+        width:100%;
+        height:460px; /* Adjusted per request */
+        object-fit:cover;
+        border-radius:12px
+    }
+    
     .product-info h2{font-family:'Dancing Script',cursive;color:var(--heading);margin:0}
     .product-info p{color:var(--para)}
     .customize{margin-top:12px;background:#FFF8FA;padding:12px;border-radius:12px}
@@ -259,6 +290,47 @@
       .hero { padding: 0 16px; }
       .why { flex-direction: column; }
       .testimonials { grid-template-columns: 1fr; }
+
+      /* --- MODAL MOBILE FIXES --- */
+      .modal { 
+          padding: 16px; /* Slight padding from screen edge */
+      }
+      
+      .modal-dialog {
+          width: 90%; /* Reduced width to prevent edge touching */
+          margin: auto; /* Centering */
+          padding: 16px;
+          overflow-x: hidden;
+          border-radius: 12px;
+          text-align: center; /* Center align content inside */
+      }
+
+      /* Reduce image height in modal so info is visible */
+      .gallery img {
+          height: 220px; /* Override desktop height */
+      }
+      
+      /* Align fields for centered view */
+      .field {
+          flex-direction: column; 
+          align-items: flex-start;
+      }
+      .field label { 
+          width: 100%; 
+          text-align: left; 
+          font-size: 12px;
+          margin-bottom: 2px;
+      }
+      .field input, .field textarea, .field select { width: 100%; }
+      
+      .product-info h2, .product-info p {
+          text-align: center;
+      }
+      .addon small {
+    white-space: nowrap;   /* Prevent text from breaking */
+      }
+      
+      .customize { text-align: left; } /* Keep form left aligned inside the centered box */
     }
 
     /* small utilities */
@@ -279,13 +351,35 @@
     .qty-control button{padding:6px 8px;border-radius:8px;border:1px solid rgba(74,63,68,0.08);background:transparent;cursor:pointer}
     .small-muted{font-size:13px;color:var(--para)}
 
-    /* Mobile Drawer Adjustments */
+    /* --- X BUTTON STYLING --- */
+    .close-x-btn {
+        font-size: 18px;
+        padding: 4px 10px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    /* --- MOBILE DRAWER ADJUSTMENTS (WIDTH FIX) --- */
     @media (max-width:600px){
       .drawer-panel{
-        border-radius:12px 12px 0 0;
-        max-width:100%;
-        width:100%;
+        /* Reduced width to 85% of screen so user can see background */
+        max-width: 85vw; 
+        width: 100%;
+        height: 100%; /* Full height */
+        border-radius: 0; /* Remove generic radius */
       }
+      
+      /* Specific radius for side drawers on mobile */
+      .modal.drawer.left .drawer-panel {
+        border-radius: 0 16px 16px 0;
+      }
+      .modal.drawer:not(.left) .drawer-panel {
+        border-radius: 16px 0 0 16px;
+      }
+
       /* Mobile Menu Links Style */
       .mobile-links a {
           display: block;
@@ -334,7 +428,7 @@
   <main>
     <section id="home" class="hero">
       <div class="hero-card">
-        <h1>✨ Handmade Gifts Crafted With Love 🩷</h1>
+        <h1>✨ Handmade Gifts Crafted With Love</h1>
         <p class="lead">Every gift tells a story — let’s create yours. At Dearly Made, we specialise in personalised, budget-friendly handmade gifts designed to make every moment meaningful.</p>
         <div class="cta-row">
           <button class="btn btn-primary" onclick="scrollToShop()">Explore Gifts</button>
@@ -434,7 +528,7 @@
           <div class="field"><label style="min-width:80px">Message</label><textarea id="custMsg" rows="3" placeholder="Write a short message"></textarea></div>
           <div class="field"><label style="min-width:80px">Color</label><select id="custColor"><option value="pastel-pink">Pastel Pink</option><option value="lavender">Lavender</option><option value="powder-blue">Powder Blue</option></select></div>
           <div class="field"><label style="min-width:80px">Photo</label><input id="custPhoto" type="file" accept="image/*"/></div>
-          <div class="field"><label style="min-width:80px">GiftWrap</label><div class="addon"><input type="checkbox" id="wrapOpt"/> <small> Add pastel gift wrap (₹49)</small></div></div>
+          <div class="field"><label style="min-width:80px"></label><div class="addon"><input type="checkbox" id="wrapOpt"/> <small>gift wrap (₹49)</small></div></div>
           <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-primary" id="addToCartBtn">Add to Cart</button><button class="btn btn-outline" onclick="closeModal()">Cancel</button></div>
         </div>
 
@@ -442,11 +536,13 @@
     </div>
   </div>
 
+  <!-- MOBILE NAVIGATION DRAWER -->
   <div class="modal drawer left" id="mobileNavDrawer" aria-hidden="true">
     <div class="drawer-panel" role="dialog" aria-modal="true">
       <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid #eee;">
         <h3 style="margin:0">Menu</h3>
-        <button class="btn btn-outline" onclick="closeMobileMenu()">✕</button>
+        <!-- X BUTTON ADDED -->
+        <button class="btn btn-outline close-x-btn" onclick="closeMobileMenu()">✕</button>
       </header>
       <div class="mobile-links">
         <a href="#home" onclick="closeMobileMenu()">Home</a>
@@ -460,14 +556,16 @@
     </div>
   </div>
 
+  <!-- CART DRAWER -->
   <div class="modal drawer" id="cartModal" aria-hidden="true">
     <div class="drawer-panel" role="dialog" aria-modal="true">
       <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <h3>Your Cart (<span id="cartTotalCount">0</span>)</h3>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-outline" id="clearCartBtn">Clear</button>
-          <button class="btn btn-primary" id="checkoutBtn">Checkout</button>
-          <button class="btn btn-outline" onclick="closeCart()">Close</button>
+          <button class="btn btn-outline" id="clearCartBtn" style="font-size:12px; padding:4px 8px;">Clear</button>
+          <button class="btn btn-primary" id="checkoutBtn" style="font-size:12px; padding:4px 8px;">Checkout</button>
+          <!-- X BUTTON ADDED -->
+          <button class="btn btn-outline close-x-btn" onclick="closeCart()">✕</button>
         </div>
       </header>
       <div id="cartList" style="max-height:60vh;overflow:auto"></div>
@@ -475,12 +573,14 @@
     </div>
   </div>
 
+  <!-- WISHLIST DRAWER -->
   <div class="modal drawer" id="wishModal" aria-hidden="true">
     <div class="drawer-panel" role="dialog" aria-modal="true">
       <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <h3>Your Wishlist (<span id="wishTotalCount">0</span>)</h3>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-outline" onclick="closeWish()">Close</button>
+           <!-- X BUTTON ADDED -->
+          <button class="btn btn-outline close-x-btn" onclick="closeWish()">✕</button>
         </div>
       </header>
       <div id="wishList" style="max-height:60vh;overflow:auto"></div>
@@ -786,14 +886,10 @@
     setHeaderOffset();
     window.addEventListener('resize', setHeaderOffset);
   </script>
-
-<br>
   <br>
   <br>
-  <br><br>
+  <br>
+  <br>
 </body>
 
 </html>
-
-
-
