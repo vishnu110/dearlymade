@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F6F2E9" />
+  <title>Dearly Made</title>
+  <meta name="description" content="Discover personalised, affordable handmade gifts. Shop keychains, photo frames, scrapbooks, gift cards, bouquets, and custom gift packs crafted with love." />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Dearly Made",
+    "url": "https://dearlymade.example",
+    "logo": "https://via.placeholder.com/300x80?text=Dearly+Made",
+    "sameAs": ["https://instagram.com/DearlyMade"]
+  }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --soft-blush:#F7DDE2;
+      --cream:#F6F2E9;
+      --lavender:#D9C8F5;
+      --powder:#DFF1FF;
+      --warm-brown:#A0766E;
+      --rosegold:#C08E8E;
+      --heading:#4A3F44;
+      --para:#5A5658;
+      --overlay:#3E3A3C;
+
+      --radius:18px;
+      --card-radius:16px;
+      --shadow: 0 10px 30px rgba(240,201,215,0.18);
+      --transition: 250ms cubic-bezier(.2,.9,.3,1);
+      
+      /* Dynamic header height variable */
+      --header-offset: 96px;
+    }
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Poppins,system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg,var(--cream), #fff 60%);
+      color:var(--para);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding-top: var(--header-offset); /* Dynamic padding */
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    /* Header */
+
+    header {
+    --hbg: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(6px);
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 1200;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 26px;
+    transition: height 200ms;
+    box-shadow: 0 6px 18px rgba(60, 50, 50, 0.06);
+    transition: all 0.3s ease;
+}
+    
+    .nav{
+      width:1200px;
+      max-width:100%;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap: nowrap; /* Default desktop: no wrap */
+    }
+
+    /* Hamburger (Hidden on Desktop) */
+    .hamburger-btn {
+        display: none; 
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--heading);
+        padding: 4px 8px;
+        margin-right: 8px;
+    }
+
+    .logo{display:flex;align-items:center;gap:12px; flex-shrink: 0;}
+    .logo img{height:44px;border-radius:10px}
+    .brand-title{display:flex;flex-direction:column}
+    .brand-title .name{font-family:'Dancing Script',cursive;color:var(--heading);font-size:20px; white-space: nowrap;}
+    .brand-title .tag{font-size:11px;color:var(--para);margin-top:-2px}
+
+    nav.menu{flex:1;display:flex;justify-content:center}
+    nav.menu a{margin:0 12px;padding:6px 10px;border-radius:10px;font-weight:600;color:var(--heading); transition: background 0.2s;}
+    nav.menu a:hover { background: rgba(255,255,255,0.5); }
+
+    .tools{display:flex;align-items:center;gap:10px; flex-shrink: 0;}
+    
+    /* Search Bar */
+    .search{
+        display:flex;align-items:center;
+        background:rgba(255,255,255,0.7);
+        padding:8px 12px;
+        border-radius:999px;
+        box-shadow:var(--shadow);
+        min-width:220px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .search input{border:0;background:transparent;outline:none;font-size:14px; width: 100%; color: var(--heading);}
+    
+    .icon-btn{background:var(--soft-blush);padding:8px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer; position: relative;}
+    
+    /* Mobile Header Specifics */
+    @media (max-width: 850px) {
+        .nav {
+            flex-wrap: wrap; /* Allow wrapping for mobile rows */
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .hamburger-btn { display: block; } /* Show hamburger */
+        nav.menu { display: none; } /* Hide desktop links */
+        
+        /* Row 1: Hamburger + Logo + Icons */
+        .logo { margin-right: auto; } /* Push icons to right */
+        .tools { gap: 8px; }
+        
+        /* Hide search in the tools row initially, we will move it via order */
+        .search {
+            order: 4; /* Forces it to the next line */
+            width: 100%; /* Full width */
+            min-width: 0;
+            margin-top: 4px;
+            background: #fff;
+        }
+    }
+
+    /* Hero */
+    .hero{max-width:1200px;margin:24px auto 40px;display:grid;grid-template-columns:1fr 420px;gap:30px;align-items:center; padding: 0 24px;}
+    .hero-card{background:linear-gradient(180deg,var(--soft-blush),#fff);border-radius:24px;padding:36px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero h1{font-family:'Dancing Script',cursive;color:var(--heading);font-size:44px;margin:0}
+    .hero p.lead{color:var(--para);margin-top:10px;font-size:16px}
+    .cta-row{margin-top:20px;display:flex;gap:12px; flex-wrap:wrap;}
+    .btn{padding:12px 18px;border-radius:999px;border:0;font-weight:700;cursor:pointer;transition:transform var(--transition),filter var(--transition)}
+    .btn-primary{background:linear-gradient(90deg,var(--lavender),var(--soft-blush));color:white;box-shadow:0 8px 30px rgba(192,142,142,0.12)}
+    .btn-outline{background:transparent;border:1px solid rgba(74,63,68,0.08);color:var(--heading)}
+    .cta-sub{font-size:14px;color:var(--para);margin-top:10px}
+
+    .hero-visual{padding:18px;background:linear-gradient(180deg,var(--powder),#fff);border-radius:18px;display:flex;flex-direction:column;gap:12px;align-items:center}
+    .gift-box{width:100%; height:auto; min-height: 220px; border-radius:16px;background:linear-gradient(180deg,#fff,#FDF6F8);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+    .gift-box img{max-width:92%;filter:drop-shadow(0 6px 14px rgba(160,110,110,0.06))}
+
+    /* Featured categories */
+    .categories{max-width:1200px;margin:6px auto;padding:8px 24px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+    .cat{background:linear-gradient(180deg,#fff, var(--cream));padding:14px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:var(--shadow);text-align:center}
+    .cat img{width:82px;height:82px;border-radius:12px;object-fit:cover}
+    .cat .title{font-family:'Dancing Script',cursive;color:var(--heading)}
+    .cat small{color:var(--para)}
+
+    /* Bestsellers */
+    .section{max-width:1200px;margin:36px auto;padding:0 24px}
+    .section h3{font-size:20px;color:var(--heading)}
+    .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .product{background:#fff;border-radius:16px;padding:12px;box-shadow:0 10px 30px rgba(220,180,190,0.08);transition:transform var(--transition),box-shadow var(--transition);position:relative; display: flex; flex-direction: column;}
+    .product:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(200,150,160,0.12)}
+    .product img{width:100%;height:180px;object-fit:cover;border-radius:12px}
+    .product .meta{padding:10px 6px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;}
+    .product .meta h4{margin:0;color:var(--heading);font-size:16px;font-weight:700}
+    .product .meta p{margin:6px 0;color:var(--para);font-size:13px}
+    .price-row{display:flex;align-items:center;justify-content:space-between;gap:8px; margin-top: auto;}
+    .price{font-weight:800;color:var(--warm-brown)}
+    .icon-actions{display:flex;gap:8px}
+    .heart{cursor:pointer;padding:8px;border-radius:999px; border:none; background: transparent; font-size: 18px; color: var(--rosegold);}
+
+    /* Why choose us */
+    .why{display:flex;gap:16px;margin-top:28px}
+    .why .card{flex:1;background:linear-gradient(180deg,#fff,#FDF8F9);padding:18px;border-radius:14px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center}
+    .why .card svg{width:36px;height:36px}
+
+    /* Testimonials */
+    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .testi{background:#fff;padding:14px;border-radius:14px;box-shadow:var(--shadow)}
+    .testi img{width:56px;height:56px;border-radius:50%}
+
+    /* Instagram grid */
+    .insta{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:18px}
+    .insta img{width:100%;height:120px;object-fit:cover;border-radius:8px}
+    
+    .insta-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    /* Footer */
+    footer{background:linear-gradient(180deg,#fff,#F6F2E9);padding:28px 24px;margin-top:36px;border-top:1px solid rgba(74,63,68,0.04)}
+    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px}
+    .footer-grid h5{color:var(--heading)}
+    .socials{display:flex;gap:8px;margin-top:8px}
+
+    /* WhatsApp floating */
+    .whatsapp{position:fixed;right:18px;bottom:18px;background:#25D366;color:white;padding:12px;border-radius:14px;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(37,211,102,0.14);z-index:1400}
+
+    /* Product modal */
+    .modal{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(60,50,50,0.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:1500; padding-top: var(--header-offset);}
+    .modal.open{display:flex}
+    .modal-dialog{background:#fff;border-radius:16px;max-width:980px;width:100%;display:grid;grid-template-columns:420px 1fr;gap:20px;padding:18px; max-height: calc(100vh - var(--header-offset) - 20px); overflow: auto;}
+    .gallery img{width:100%;height:360px;object-fit:cover;border-radius:12px}
+    .product-info h2{font-family:'Dancing Script',cursive;color:var(--heading);margin:0}
+    .product-info p{color:var(--para)}
+    .customize{margin-top:12px;background:#FFF8FA;padding:12px;border-radius:12px}
+    .field{display:flex;gap:8px;align-items:center;margin:8px 0}
+    .field input[type=text], .field textarea, .field select{flex:1;padding:8px;border-radius:8px;border:1px solid #E8DCE9;background:#fff}
+    .addon{display:flex;gap:8px;align-items:center}
+
+    /* Responsive Logic */
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr}
+      .categories{grid-template-columns:repeat(3,1fr)}
+      .product-grid{grid-template-columns:repeat(2,1fr)}
+      .insta{grid-template-columns:repeat(3,1fr)}
+      .footer-grid{grid-template-columns:1fr 1fr}
+      .modal-dialog{grid-template-columns:1fr}
+    }
+
+    /* --- MOBILE SPECIFIC (Under 600px) --- */
+    @media (max-width:600px){
+      /* Categories 2 columns */
+      .categories{grid-template-columns:repeat(2,1fr)}
+      
+      /* Product Grid - 2 Columns like Instagram/Amazon */
+      .product-grid{
+          grid-template-columns: repeat(2, 1fr); 
+          gap: 10px;
+      }
+      /* Smaller cards for mobile */
+      .product { padding: 8px; }
+      .product img { height: 140px; }
+      .product .meta h4 { font-size: 14px; line-height: 1.2; }
+      .product .meta p { display: none; } /* Hide short desc on mobile to save space */
+      .price-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .icon-actions { width: 100%; justify-content: space-between; margin-top: 4px; }
+      .icon-actions .btn-outline { font-size: 11px; padding: 4px 8px; width: 100%; text-align: center;}
+      .heart { padding: 0; }
+      
+      .hero { padding: 0 16px; }
+      .why { flex-direction: column; }
+      .testimonials { grid-template-columns: 1fr; }
+    }
+
+    /* small utilities */
+    .muted{color:var(--para);font-size:13px}
+    .small{font-size:13px}
+
+    /* Drawer styling (re-uses .modal overlay) */
+    .modal.drawer{align-items:flex-start;}
+    .drawer-panel{margin-left:auto;background:#fff;border-radius:12px;max-width:420px;width:100%;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,0.12);display:flex;flex-direction:column;gap:8px; height: 100%;}
+    
+    /* Left side drawer for Mobile Menu */
+    .modal.drawer.left { justify-content: flex-start; }
+    .modal.drawer.left .drawer-panel { margin-left: 0; margin-right: auto; border-radius: 0 12px 12px 0; }
+    
+    .cart-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;border:1px solid #F0E7E9;background:#fff}
+    .cart-item img{width:72px;height:52px;object-fit:cover;border-radius:8px}
+    .qty-control{display:flex;gap:6px;align-items:center}
+    .qty-control button{padding:6px 8px;border-radius:8px;border:1px solid rgba(74,63,68,0.08);background:transparent;cursor:pointer}
+    .small-muted{font-size:13px;color:var(--para)}
+
+    /* Mobile Drawer Adjustments */
+    @media (max-width:600px){
+      .drawer-panel{
+        border-radius:12px 12px 0 0;
+        max-width:100%;
+        width:100%;
+      }
+      /* Mobile Menu Links Style */
+      .mobile-links a {
+          display: block;
+          padding: 14px;
+          border-bottom: 1px solid #f0f0f0;
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--heading);
+      }
+      .mobile-links a:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader">
+    <div class="nav">
+      <div class="hamburger-btn" onclick="openMobileMenu()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </div>
+
+      <div class="logo">
+        <img src="img/logo.png" alt="Dearly Made logo" onerror="this.src='https://via.placeholder.com/44x44?text=DM'"/>
+        <div class="brand-title">
+          <div class="name">Dearly Made</div>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a href="#home">Home</a>
+        <a href="#shop">Shop</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="tools">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:0.7;margin-right:8px"><path d="M21 21l-4.35-4.35" stroke="#6B5B5B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="#6B5B5B" stroke-width="1.6"></circle></svg>
+          <input id="searchInput" placeholder="Search gifts..." aria-label="Search gifts" />
+        </div>
+        <div class="icon-btn" id="wishlistBtn" title="Wishlist">💖</div>
+        <div class="icon-btn" id="cartBtn" title="Cart">🧺 <span id="cartCount" style="margin-left:6px;font-weight:700">0</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-card">
+        <h1>✨ Handmade Gifts Crafted With Love</h1>
+        <p class="lead">Every gift tells a story — let’s create yours. At Dearly Made, we specialise in personalised, budget-friendly handmade gifts designed to make every moment meaningful.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" onclick="scrollToShop()">Explore Gifts</button>
+          <button class="btn btn-outline" onclick="openBuilder()">Build Your Pack</button>
+        </div>
+        <p class="cta-sub">Free personalised message card • Fast delivery across India</p>
+
+        <div class="why" style="margin-top:24px">
+          <div class="card"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9-7.55C1.63 10 4.28 6 8.61 6c2.12 0 3.33 1.11 3.39 1.18.06-.07 1.26-1.18 3.39-1.18 4.33 0 6.98 4 5.61 7.45C19 16.65 12 21 12 21z" fill="#A0766E"/></svg><div><strong>Handmade</strong><div class="muted">Crafted individually</div></div></div>
+          <div class="card"><svg viewBox="0 0 24 24"><path d="M12 2l2 4 4 .6-2.6 2.6L17 14l-5-2.6L7 14l1.6-4.8L6 7.6 10 7 12 2z" fill="#C08E8E"/></svg><div><strong>Custom</strong><div class="muted">Names & Photos</div></div></div>
+          <div class="card"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9-7.55C1.63 10 4.28 6 8.61 6c2.12 0 3.33 1.11 3.39 1.18.06-.07 1.26-1.18 3.39-1.18 4.33 0 6.98 4 5.61 7.45C19 16.65 12 21 12 21z" fill="#D9C8F5"/></svg><div><strong>Affordable</strong><div class="muted">Pocket friendly</div></div></div>
+        </div>
+      </div>
+
+      <aside class="hero-visual">
+        <div class="gift-box">
+          <img src="img/unbox.png" alt="Pastel wrapped gift box with ribbon" onerror="this.src='https://via.placeholder.com/300x220?text=Gift+Box'"/>
+        </div>
+        <div style="text-align:center">
+          <div class="muted">Build a hamper, ship with love.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="categories" aria-label="Featured categories">
+      <div class="cat"><img src="img/keychain.png" alt="Keychains category" onerror="this.src='https://via.placeholder.com/82'"/><div class="title">Keychains</div></div>
+      <div class="cat"><img src="img/booklet.png" alt="Memory books" onerror="this.src='https://via.placeholder.com/82'"/><div class="title">Books</div></div>
+      <div class="cat"><img src="img/gift card.png" alt="Photo frames" onerror="this.src='https://via.placeholder.com/82'"/><div class="title">Frames</div></div>
+      <div class="cat"><img src="img/card 1.png" alt="Gift cards" onerror="this.src='https://via.placeholder.com/82'"/><div class="title">Cards</div></div>
+      <div class="cat"><img src="img/Bouquet.png" alt="Bouquets" onerror="this.src='https://via.placeholder.com/82'"/><div class="title">Bouquets</div></div>
+      <div class="cat"><img src="img/massive combo.png" alt="Gift packs" onerror="this.src='https://via.placeholder.com/82'"/><div class="title">Combos</div></div>
+    </section>
+
+    <section id="shop" class="section">
+      <h3>Bestsellers</h3>
+      <p class="muted">Discover the gifts our customers love the most.</p>
+
+      <div class="product-grid" id="productGrid">
+        </div>
+    </section>
+
+    <section id="about" class="section">
+      <h3>Why Choose Dearly Made?</h3>
+      <div class="why" style="margin-top:12px">
+        <div class="card"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9-7.55C1.63 10 4.28 6 8.61 6c2.12 0 3.33 1.11 3.39 1.18.06-.07 1.26-1.18 3.39-1.18 4.33 0 6.98 4 5.61 7.45C19 16.65 12 21 12 21z" fill="#A0766E"/></svg><div><strong>Handmade With Love</strong><div class="muted">Every item handcrafted and quality-checked</div></div></div>
+        <div class="card"><svg viewBox="0 0 24 24"><path d="M12 2l2 4 4 .6-2.6 2.6L17 14l-5-2.6L7 14l1.6-4.8L6 7.6 10 7 12 2z" fill="#C08E8E"/></svg><div><strong>Customisable</strong><div class="muted">Names, photos, colours — made to order</div></div></div>
+        <div class="card"><svg viewBox="0 0 24 24"><path d="M21 12v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7" stroke="#D9C8F5" stroke-width="1.5" fill="none"/></svg><div><strong>Fast Delivery</strong><div class="muted">Secure packaging & safe shipping</div></div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3>Reviews & Happy Moments</h3>
+      <div class="testimonials">
+        <div class="testi"><div style="display:flex;gap:12px;align-items:center"><img src="img/persona/Aishu.png" alt="Aishwarya" onerror="this.src='https://via.placeholder.com/56'"/><div><strong>Aishwarya R.</strong><div class="muted">⭐⭐⭐⭐⭐</div></div></div><p style="margin-top:10px">“Absolutely loved the scrapbook! The detailing was perfect.”</p></div>
+        <div class="testi"><div style="display:flex;gap:12px;align-items:center"><img src="img/persona/dinesh.jpg" alt="Dinesh" onerror="this.src='https://via.placeholder.com/56'"/><div><strong>Dinesh Kumar</strong><div class="muted">⭐⭐⭐⭐⭐</div></div></div><p style="margin-top:10px">“The photo keychain was adorable! Packaging was too cute.”</p></div>
+        <div class="testi"><div style="display:flex;gap:12px;align-items:center"><img src="img/persona/janvi.png" alt="Jhanvi" onerror="this.src='https://via.placeholder.com/56'"/><div><strong>Jhanvi M.</strong><div class="muted">⭐⭐⭐⭐⭐</div></div></div><p style="margin-top:10px">“The custom gift pack was the best decision ever!”</p></div>
+      </div>
+    </section>
+    <br>
+
+   <section class="section">
+      <h3>Follow Us for Gift Ideas</h3>
+      <div class="insta-container">
+        <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DRCGFoSE1iS/" style="background:#fff; border:0; margin: 10px; max-width:300px; min-width:250px; padding:0;"></blockquote>
+        <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DRCHgx-k1zx/?img_index=1" style="background:#fff; border:0; margin: 10px; max-width:300px; min-width:250px; padding:0;"></blockquote>
+        <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DRB2GhOER30/" style="background:#fff; border:0; margin: 10px; max-width:300px; min-width:250px; padding:0;"></blockquote>
+      </div>
+    </section>
+
+
+    <section id="contact" class="section" style="text-align:center;margin-top:30px">
+      <h3>Join Our Gift Family</h3>
+      <p class="muted">Get cute ideas, discounts, and behind-the-scenes in your inbox.</p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px; flex-wrap:wrap;">
+        <input id="emailJoin" placeholder="Your email address" style="padding:10px 14px;border-radius:999px;border:1px solid #E8DCE9;min-width:300px" />
+        <button class="btn btn-primary" onclick="joinEmail()">Join</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <img src="img/logo footer.png" alt="Dearly Made logo" onerror="this.src='https://via.placeholder.com/120x40?text=Logo'"/>
+        <p class="muted">Handmade gifts crafted with heart.</p>
+        <div class="socials"><a href="#">Instagram</a><a href="#">WhatsApp</a><a href="#">Email</a></div>
+      </div>
+      <div>
+        <h5>Quick Links</h5>
+        <div class="muted">Home · Shop · About · Contact</div>
+      </div>
+      <div>
+        <h5>Shop Categories</h5>
+        <div class="muted">Keychains · Frames · Memory Books · Cards</div>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <div class="muted">support@dearlymade.com</div>
+      </div>
+    </div>
+    <div style="max-width:1200px;margin:18px auto 0;text-align:center;color:var(--para)">© 2025 Dearly Made. All Rights Reserved.</div>
+  </footer>
+
+  <a class="whatsapp" href="https://wa.me/916381602251?text=Hi%20Dearly%20Made%20I%20want%20to%20order" target="_blank" aria-label="Chat on WhatsApp">💬 Chat</a>
+
+  <div class="modal" id="productModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+      <div class="gallery">
+        <img id="modalImg" src="https://via.placeholder.com/600x400?text=Product" alt="Product image" />
+      </div>
+      <div class="product-info">
+        <h2 id="modalTitle">Product Title</h2>
+        <p id="modalPrice" style="font-weight:800;color:var(--warm-brown)">₹299</p>
+        <p id="modalDesc" class="muted">Short emotional intro to the product and what makes it special.</p>
+
+        <div class="customize">
+          <h4 style="margin:0 0 8px 0">Personalize your gift</h4>
+          <div class="field"><label style="min-width:80px">Name</label><input id="custName" type="text" placeholder="Enter name (optional)"/></div>
+          <div class="field"><label style="min-width:80px">Message</label><textarea id="custMsg" rows="3" placeholder="Write a short message"></textarea></div>
+          <div class="field"><label style="min-width:80px">Color</label><select id="custColor"><option value="pastel-pink">Pastel Pink</option><option value="lavender">Lavender</option><option value="powder-blue">Powder Blue</option></select></div>
+          <div class="field"><label style="min-width:80px">Photo</label><input id="custPhoto" type="file" accept="image/*"/></div>
+          <div class="field"><label style="min-width:80px">GiftWrap</label><div class="addon"><input type="checkbox" id="wrapOpt"/> <small> Add pastel gift wrap (₹49)</small></div></div>
+          <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-primary" id="addToCartBtn">Add to Cart</button><button class="btn btn-outline" onclick="closeModal()">Cancel</button></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal drawer left" id="mobileNavDrawer" aria-hidden="true">
+    <div class="drawer-panel" role="dialog" aria-modal="true">
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid #eee;">
+        <h3 style="margin:0">Menu</h3>
+        <button class="btn btn-outline" onclick="closeMobileMenu()">✕</button>
+      </header>
+      <div class="mobile-links">
+        <a href="#home" onclick="closeMobileMenu()">Home</a>
+        <a href="#shop" onclick="closeMobileMenu()">Shop</a>
+        <a href="#about" onclick="closeMobileMenu()">About</a>
+        <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+        <br>
+        <a href="#" onclick="alert('Coming soon'); closeMobileMenu()">Track Order</a>
+        <a href="#" onclick="alert('Coming soon'); closeMobileMenu()">Login / Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal drawer" id="cartModal" aria-hidden="true">
+    <div class="drawer-panel" role="dialog" aria-modal="true">
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3>Your Cart (<span id="cartTotalCount">0</span>)</h3>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" id="clearCartBtn">Clear</button>
+          <button class="btn btn-primary" id="checkoutBtn">Checkout</button>
+          <button class="btn btn-outline" onclick="closeCart()">Close</button>
+        </div>
+      </header>
+      <div id="cartList" style="max-height:60vh;overflow:auto"></div>
+      <div id="cartSummary" style="margin-top:12px;text-align:right;font-weight:800">Total: ₹0</div>
+    </div>
+  </div>
+
+  <div class="modal drawer" id="wishModal" aria-hidden="true">
+    <div class="drawer-panel" role="dialog" aria-modal="true">
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3>Your Wishlist (<span id="wishTotalCount">0</span>)</h3>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="closeWish()">Close</button>
+        </div>
+      </header>
+      <div id="wishList" style="max-height:60vh;overflow:auto"></div>
+    </div>
+  </div>
+
+  <script async src="//www.instagram.com/embed.js"></script>
+  <script>
+    /* --- SAMPLE PRODUCT DATA --- */
+    const products = [
+      {id:1,slug:'resin-name-keychain',title:'Resin Name Keychain',price:249,category:'keychains',img:'img/keychain.png',short:'Cute resin keychain', customizable:true},
+      {id:2,slug:'Combo',title:'Gift Combo',price:199,category:'combos',img:'img/products/massive combo.png',short:'Keep a tiny memory close',customizable:true},
+      {id:3,slug:'memory-scrapbook',title:'Mini Scrapbook',price:699,category:'memory-books',img:'img/products/lovely combo.png',short:'Handmade scrapbook',customizable:true},
+      {id:4,slug:'Wall crads',title:'Wall Cards',price:499,category:'wall-cards',img:'img/products/card 3.png',short:'Simple, Warm cards',customizable:true},
+      {id:5,slug:'pop-card',title:'Pop-Up Card',price:149,category:'gift-cards',img:'img/products/combo 1.png',short:'Surprise pop-up card',customizable:true},
+      {id:6,slug:'pastel-bouquet',title:'Pastel Bouquet',price:399,category:'bouquets',img:'img/products/Bouquet.png',short:'Handmade paper bouquet',customizable:false}
+    ];
+
+    const cart = JSON.parse(localStorage.getItem('dm_cart')||'[]');
+    const wishlist = JSON.parse(localStorage.getItem('dm_wish')||'[]');
+
+    function renderProducts(list=products){
+      const grid = document.getElementById('productGrid');grid.innerHTML='';
+      list.forEach(p=>{
+        const el = document.createElement('div');el.className='product';
+        el.innerHTML = `
+          <img src="${p.img}" alt="${p.title} - handmade, personalised" onerror="this.src='https://via.placeholder.com/300?text=Product'" onclick='openModal(${p.id})'/>
+          <div class="meta">
+            <h4>${p.title}</h4>
+            <p class="small">${p.short}</p>
+            <div class="price-row">
+                <div class="price">₹${p.price}</div>
+                <div class="icon-actions">
+                    <button class="heart" title="Add to wishlist" onclick="toggleWish(${p.id})">♡</button>
+                    <button class="btn btn-outline" onclick='openModal(${p.id})'>View</button>
+                </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      })
+    }
+    renderProducts();
+
+    /* --- MOBILE MENU HANDLERS --- */
+    function openMobileMenu(){
+        document.getElementById('mobileNavDrawer').classList.add('open');
+        document.getElementById('mobileNavDrawer').setAttribute('aria-hidden','false');
+    }
+    function closeMobileMenu(){
+        document.getElementById('mobileNavDrawer').classList.remove('open');
+        document.getElementById('mobileNavDrawer').setAttribute('aria-hidden','true');
+    }
+
+    /* --- EXISTING FUNCTIONS --- */
+    function openModal(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById('modalTitle').textContent = p.title;
+      document.getElementById('modalPrice').textContent = '₹'+p.price;
+      document.getElementById('modalDesc').textContent = p.short + ' — This piece is crafted with care, personalised for your loved one.';
+      document.getElementById('modalImg').src = p.img;
+      const modal = document.getElementById('productModal');
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      const addBtn = document.getElementById('addToCartBtn');
+      addBtn.onclick = ()=> addToCart(p.id);
+    }
+    function closeModal(){
+      const modal = document.getElementById('productModal');
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    function addToCart(id){
+      const name = document.getElementById('custName').value||'';
+      const msg = document.getElementById('custMsg').value||'';
+      const color = document.getElementById('custColor').value;
+      const wrap = document.getElementById('wrapOpt').checked;
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      const item = {id:p.id,title:p.title,price:p.price,qty:1,name,msg,color,wrap};
+      cart.push(item);
+      localStorage.setItem('dm_cart',JSON.stringify(cart));
+      updateCartCount();
+      closeModal();
+      alert('Added to cart!');
+    }
+
+    function updateCartCount(){
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+    updateCartCount();
+
+    function toggleWish(id){
+      const idx = wishlist.indexOf(id);
+      if(idx>-1) wishlist.splice(idx,1); else wishlist.push(id);
+      localStorage.setItem('dm_wish',JSON.stringify(wishlist));
+      alert('Wishlist updated');
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      const searchEl = document.getElementById('searchInput');
+      if(searchEl){
+        searchEl.addEventListener('input',function(e){
+          const q = e.target.value.trim().toLowerCase();
+          if(!q) return renderProducts();
+          const res = products.filter(p=> (p.title+p.short+p.category).toLowerCase().includes(q));
+          renderProducts(res);
+        });
+      }
+
+      window.joinEmail = function(){
+        const email = document.getElementById('emailJoin').value.trim();
+        if(!email||!email.includes('@')){alert('Please enter a valid email.');return}
+        alert('Thanks! We will send cute ideas to '+email);
+        document.getElementById('emailJoin').value='';
+      };
+
+      window.openBuilder = function(){
+        alert('Gift Pack Builder coming soon');
+      };
+
+      window.scrollToShop = function(){
+        const shop = document.getElementById('shop');
+        if(shop) shop.scrollIntoView({behavior:'smooth'});
+      };
+
+      const productModal = document.getElementById('productModal');
+      if(productModal){
+        productModal.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+      }
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeModal(); });
+
+      window.addEventListener('load',()=>{
+        document.querySelectorAll('img').forEach(img=>{ img.loading='lazy'; });
+      });
+    });
+
+    /* --------- CART & WISHLIST UI HANDLERS --------- */
+
+    function openCart(){
+      document.getElementById('cartModal').classList.add('open');
+      document.getElementById('cartModal').setAttribute('aria-hidden','false');
+      renderCart();
+    }
+    function closeCart(){
+      document.getElementById('cartModal').classList.remove('open');
+      document.getElementById('cartModal').setAttribute('aria-hidden','true');
+    }
+    function openWish(){
+      document.getElementById('wishModal').classList.add('open');
+      document.getElementById('wishModal').setAttribute('aria-hidden','false');
+      renderWish();
+    }
+    function closeWish(){
+      document.getElementById('wishModal').classList.remove('open');
+      document.getElementById('wishModal').setAttribute('aria-hidden','true');
+    }
+
+    function renderCart(){
+      const listEl = document.getElementById('cartList');
+      const summaryEl = document.getElementById('cartSummary');
+      const totalCountEl = document.getElementById('cartTotalCount');
+      listEl.innerHTML = '';
+      if(!cart.length){
+        listEl.innerHTML = '<div class="muted" style="padding:12px">Your cart is empty.</div>';
+        summaryEl.textContent = 'Total: ₹0';
+        totalCountEl.textContent = '0';
+        return;
+      }
+      let total = 0;
+      cart.forEach((item, idx)=>{
+        total += item.price * (item.qty || 1);
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <img src="${(products.find(p=>p.id===item.id)||{}).img || 'https://via.placeholder.com/120'}" alt="${item.title}">
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">${item.title}</div>
+                <div class="small-muted">₹${item.price}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800">₹${item.price * (item.qty||1)}</div>
+                <button class="btn btn-outline" style="margin-top:6px; font-size:11px; padding:4px 8px;" onclick="removeCartItem(${idx})">Remove</button>
+              </div>
+            </div>
+            <div style="margin-top:8px;display:flex;justify-content:flex-start;align-items:center;gap:8px">
+              <div class="qty-control">
+                <button onclick="changeQty(${idx}, -1)">−</button>
+                <div style="padding:6px 10px;border-radius:8px;border:1px solid #E8DCE9">${item.qty||1}</div>
+                <button onclick="changeQty(${idx}, +1)">+</button>
+              </div>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(row);
+      });
+      summaryEl.textContent = 'Total: ₹' + total;
+      totalCountEl.textContent = cart.length;
+      updateCartCount();
+      localStorage.setItem('dm_cart', JSON.stringify(cart));
+    }
+
+    function removeCartItem(index){
+      if(index<0 || index>=cart.length) return;
+      cart.splice(index,1);
+      localStorage.setItem('dm_cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function changeQty(index, delta){
+      if(index<0 || index>=cart.length) return;
+      cart[index].qty = Math.max(1, (cart[index].qty||1) + delta);
+      localStorage.setItem('dm_cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    document.getElementById('clearCartBtn')?.addEventListener('click', ()=>{
+      if(!cart.length) return;
+      if(!confirm('Clear entire cart?')) return;
+      cart.splice(0,cart.length);
+      localStorage.setItem('dm_cart', JSON.stringify(cart));
+      renderCart();
+    });
+
+    document.getElementById('checkoutBtn')?.addEventListener('click', ()=>{
+      if(!cart.length){ alert('Cart is empty'); return;}
+      alert('Checkout demo — total ₹' + cart.reduce((s,i)=>s + (i.price*(i.qty||1)),0).toFixed(0));
+    });
+
+    function renderWish(){
+      const listEl = document.getElementById('wishList');
+      const totalEl = document.getElementById('wishTotalCount');
+      listEl.innerHTML = '';
+      if(!wishlist.length){
+        listEl.innerHTML = '<div class="muted" style="padding:12px">Your wishlist is empty.</div>';
+        totalEl.textContent = '0';
+        return;
+      }
+      wishlist.forEach((id, idx)=>{
+        const p = products.find(x=>x.id===id) || {title:'Unknown', price:0, img:'https://via.placeholder.com/120'};
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <img src="${p.img}" alt="${p.title}">
+          <div style="flex:1;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">${p.title}</div>
+              <div class="small-muted">₹${p.price}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+              <button class="btn btn-primary" onclick="addWishToCart(${id})" style="font-size:11px; padding:4px 8px;">Add</button>
+              <button class="btn btn-outline" onclick="removeWish(${idx})" style="font-size:11px; padding:4px 8px;">Remove</button>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(row);
+      });
+      totalEl.textContent = wishlist.length;
+    }
+
+    function removeWish(index){
+      if(index<0 || index>=wishlist.length) return;
+      wishlist.splice(index,1);
+      localStorage.setItem('dm_wish', JSON.stringify(wishlist));
+      renderWish();
+    }
+
+    function addWishToCart(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      cart.push({id:p.id,title:p.title,price:p.price,qty:1,name:'',msg:'',color:'',wrap:false});
+      const idx = wishlist.indexOf(id);
+      if(idx>-1) wishlist.splice(idx,1);
+      localStorage.setItem('dm_wish', JSON.stringify(wishlist));
+      localStorage.setItem('dm_cart', JSON.stringify(cart));
+      updateCartCount();
+      renderWish();
+      alert('Added to cart');
+    }
+
+    document.getElementById('cartBtn')?.addEventListener('click', openCart);
+    document.getElementById('wishlistBtn')?.addEventListener('click', openWish);
+
+    function updateWishCountInUI(){
+      const wishCounter = document.getElementById('wishTotalCount');
+      if(wishCounter) wishCounter.textContent = wishlist.length;
+    }
+    updateWishCountInUI();
+
+    function setHeaderOffset() {
+      const header = document.querySelector('header');
+      const root = document.documentElement;
+      if(!header) return;
+      const headerRect = header.getBoundingClientRect();
+      const offset = Math.ceil(headerRect.height + 12);
+      root.style.setProperty('--header-offset', offset + 'px');
+    }
+
+    setHeaderOffset();
+    window.addEventListener('resize', setHeaderOffset);
+  </script>
+</body>
+</html>
