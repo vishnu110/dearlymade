@@ -257,6 +257,10 @@
     .field input[type=text], .field textarea, .field select{flex:1;padding:8px;border-radius:8px;border:1px solid #E8DCE9;background:#fff}
     .addon{display:flex;gap:8px;align-items:center}
 
+    .modal.drawer { padding-top: 60px; }
+    .drawer-panel { max-height: calc(100vh - 60px); }
+
+
     /* Responsive Logic */
     @media (max-width:1000px){
       .hero{grid-template-columns:1fr}
@@ -339,8 +343,35 @@
 
     /* Drawer styling (re-uses .modal overlay) */
     .modal.drawer{align-items:flex-start;}
-    .drawer-panel{margin-left:auto;background:#fff;border-radius:12px;max-width:420px;width:100%;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,0.12);display:flex;flex-direction:column;gap:8px; height: 100%;}
+    .drawer-panel{
+        margin-left:auto;
+        background:#fff;
+        border-radius:12px;
+        max-width:420px;
+        width:100%;
+        padding:16px;
+        box-shadow:0 24px 60px rgba(0,0,0,0.12);
+        display:flex;
+        flex-direction:column;
+        height: 100%; /* Ensure full height for flex layout */
+    }
     
+    /* FIXED: Layout for Cart List to take up middle space */
+    #cartList, #wishList {
+        flex: 1;
+        overflow-y: auto;
+        max-height: unset !important; /* Remove constraint so it fills flex space */
+        margin-bottom: 10px;
+    }
+
+    /* FIXED: New Drawer Footer for Buttons */
+    .drawer-footer {
+        flex-shrink: 0;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+        background: #fff;
+    }
+
     /* Left side drawer for Mobile Menu */
     .modal.drawer.left { justify-content: flex-start; }
     .modal.drawer.left .drawer-panel { margin-left: 0; margin-right: auto; border-radius: 0 12px 12px 0; }
@@ -536,12 +567,10 @@
     </div>
   </div>
 
-  <!-- MOBILE NAVIGATION DRAWER -->
   <div class="modal drawer left" id="mobileNavDrawer" aria-hidden="true">
     <div class="drawer-panel" role="dialog" aria-modal="true">
       <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid #eee;">
         <h3 style="margin:0">Menu</h3>
-        <!-- X BUTTON ADDED -->
         <button class="btn btn-outline close-x-btn" onclick="closeMobileMenu()">✕</button>
       </header>
       <div class="mobile-links">
@@ -556,34 +585,36 @@
     </div>
   </div>
 
-  <!-- CART DRAWER -->
   <div class="modal drawer" id="cartModal" aria-hidden="true">
     <div class="drawer-panel" role="dialog" aria-modal="true">
-      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <h3>Your Cart (<span id="cartTotalCount">0</span>)</h3>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-outline" id="clearCartBtn" style="font-size:12px; padding:4px 8px;">Clear</button>
-          <button class="btn btn-primary" id="checkoutBtn" style="font-size:12px; padding:4px 8px;">Checkout</button>
-          <!-- X BUTTON ADDED -->
-          <button class="btn btn-outline close-x-btn" onclick="closeCart()">✕</button>
-        </div>
+      
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px; flex-shrink: 0;">
+        <h3 style="margin:0">Your Cart (<span id="cartTotalCount">0</span>)</h3>
+        <button class="btn btn-outline close-x-btn" onclick="closeCart()">✕</button>
       </header>
-      <div id="cartList" style="max-height:60vh;overflow:auto"></div>
-      <div id="cartSummary" style="margin-top:12px;text-align:right;font-weight:800">Total: ₹0</div>
+      
+      <div id="cartList"></div>
+      
+      <div class="drawer-footer">
+          <div id="cartSummary" style="text-align:right;font-weight:800; margin-bottom: 10px;">Total: ₹0</div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn btn-outline" id="clearCartBtn" style="width:100%; justify-content: center;">Clear Cart</button>
+            <button class="btn btn-primary" id="checkoutBtn" style="width:100%; justify-content: center;">Checkout</button>
+          </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- WISHLIST DRAWER -->
   <div class="modal drawer" id="wishModal" aria-hidden="true">
     <div class="drawer-panel" role="dialog" aria-modal="true">
-      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <h3>Your Wishlist (<span id="wishTotalCount">0</span>)</h3>
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px; flex-shrink: 0;">
+        <h3 style="margin:0">Your Wishlist (<span id="wishTotalCount">0</span>)</h3>
         <div style="display:flex;gap:8px">
-           <!-- X BUTTON ADDED -->
-          <button class="btn btn-outline close-x-btn" onclick="closeWish()">✕</button>
+           <button class="btn btn-outline close-x-btn" onclick="closeWish()">✕</button>
         </div>
       </header>
-      <div id="wishList" style="max-height:60vh;overflow:auto"></div>
+      <div id="wishList"></div>
     </div>
   </div>
 
@@ -747,7 +778,7 @@
       const totalCountEl = document.getElementById('cartTotalCount');
       listEl.innerHTML = '';
       if(!cart.length){
-        listEl.innerHTML = '<div class="muted" style="padding:12px">Your cart is empty.</div>';
+        listEl.innerHTML = '<div class="muted" style="padding:12px; text-align:center; margin-top:20px;">Your cart is empty.</div>';
         summaryEl.textContent = 'Total: ₹0';
         totalCountEl.textContent = '0';
         return;
