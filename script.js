@@ -470,7 +470,7 @@ function buildOrderText(fullName, address, pincode, customerWhatsapp) {
   let message = '🛍️ *New Dearly Made Order*\n\n';
 
   // CUSTOMER DETAILS
-  message += '*Customer Details*️⃣\n';
+  message += '*Customer Details*\n';
   message += `*Name:* ${fullName}\n`;
   message += `*Address:* ${address}\n`;
   message += `*Pincode:* ${pincode}\n`;
@@ -722,3 +722,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('generateQrBtn')?.addEventListener('click', handleGenerateQrClick);
   document.getElementById('confirmOrderBtn')?.addEventListener('click', handleConfirmOrderClick);
 });
+
