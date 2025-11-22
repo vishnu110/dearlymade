@@ -51,6 +51,18 @@ const products = [
 const cart = JSON.parse(localStorage.getItem('dm_cart') || '[]');
 const wishlist = JSON.parse(localStorage.getItem('dm_wish') || '[]');
 
+/* --- CALCULATE CART TOTAL (incl. gift wrap) --- */
+function calculateCartTotal() {
+  let total = 0;
+  cart.forEach(item => {
+    const qty = item.qty || 1;
+    const baseAmount = item.price * qty;
+    const wrapAmount = item.wrap ? WRAP_PRICE * qty : 0;
+    total += baseAmount + wrapAmount;
+  });
+  return total;
+}
+
 /* --- RENDER PRODUCTS --- */
 function renderProducts(list = products){
   const grid = document.getElementById('productGrid');
@@ -139,7 +151,6 @@ function addToCart(id){
   const color = document.getElementById('custColor')?.value || '';
   const wrap = document.getElementById('wrapOpt')?.checked || false;
   
-  // Read chosen photo file name (for reference in WhatsApp)
   const photoInput = document.getElementById('custPhoto');
   const photoFile = photoInput && photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
   const photoName = photoFile ? photoFile.name : '';
@@ -191,104 +202,41 @@ function updateWishCountInUI(){
   if(wishCounter) wishCounter.textContent = wishlist.length;
 }
 
-/* --- SEARCH & PAGE INIT --- */
-document.addEventListener('DOMContentLoaded', () => {
-  const searchEl = document.getElementById('searchInput');
-  const isShopPage = window.location.pathname.toLowerCase().includes('shop');
-  let initialQuery = '';
+/* --- CHECKOUT MODAL OPEN/CLOSE --- */
+function openCheckoutModal() {
+  const modal = document.getElementById('checkoutModal');
+  if (!modal) return;
 
-  if (isShopPage) {
-    const params = new URLSearchParams(window.location.search);
-    initialQuery = params.get('search') || params.get('q') || '';
+  const nameEl = document.getElementById('custFullName');
+  const addrEl = document.getElementById('custAddress');
+  const pinEl = document.getElementById('custPincode');
+  const waEl = document.getElementById('custWhatsapp');
+
+  if (nameEl) nameEl.value = '';
+  if (addrEl) addrEl.value = '';
+  if (pinEl) pinEl.value = '';
+  if (waEl) waEl.value = '';
+
+  const qrBox = document.getElementById('upiQrContainer');
+  if (qrBox) {
+    qrBox.innerHTML = '<span class="muted">QR will appear here after you click “Generate QR”</span>';
   }
 
-  // INITIAL RENDER
-  if (isShopPage) {
-    if (initialQuery) {
-      if (searchEl) searchEl.value = initialQuery;
-      const qLower = initialQuery.toLowerCase();
-      const res = products.filter(p =>
-        (p.title + p.short + p.category).toLowerCase().includes(qLower)
-      );
-      renderProducts(res);
-    } else {
-      renderProducts(products);
-    }
-  } else {
-    // Home page shows only first 6 as "Bestsellers"
-    renderProducts(products.slice(0, 6));
+  const amountEl = document.getElementById('upiAmountText');
+  if (amountEl) {
+    amountEl.textContent = 'Order Total (incl. gift wrap): ₹' + calculateCartTotal();
   }
 
-  // SEARCH BEHAVIOUR
-  if (searchEl){
-    if (isShopPage) {
-      // On shop page: live filter all products
-      searchEl.addEventListener('input', function(e){
-        const q = e.target.value.trim().toLowerCase();
-        if(!q){
-          renderProducts(products);
-          return;
-        }
-        const res = products.filter(p =>
-          (p.title + p.short + p.category).toLowerCase().includes(q)
-        );
-        renderProducts(res);
-      });
-    } else {
-      // On home page: redirect to shop page with query when pressing Enter
-      searchEl.addEventListener('keydown', function(e){
-        if (e.key === 'Enter') {
-          const q = e.target.value.trim();
-          if (!q) return;
-          window.location.href = 'shop.html?search=' + encodeURIComponent(q);
-        }
-      });
-    }
-  }
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+}
 
-  // Email join
-  window.joinEmail = function(){
-    const emailInput = document.getElementById('emailJoin');
-    const email = emailInput?.value.trim();
-    if(!email || !email.includes('@')){
-      alert('Please enter a valid email.');
-      return;
-    }
-    alert('Thanks! We will send cute ideas to ' + email);
-    if(emailInput) emailInput.value = '';
-  };
-
-  // Pack builder placeholder
-  window.openBuilder = function(){
-    alert('Gift Pack Builder coming soon');
-  };
-
-  // Modal overlay close & ESC
-  const productModal = document.getElementById('productModal');
-  if(productModal){
-    productModal.addEventListener('click', function(e){
-      if(e.target === this) closeModal();
-    });
-  }
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') closeModal();
-  });
-
-  // Lazy-load images
-  window.addEventListener('load', () => {
-    document.querySelectorAll('img').forEach(img => {
-      img.loading = 'lazy';
-    });
-  });
-
-  // Header offset
-  setHeaderOffset();
-  window.addEventListener('resize', setHeaderOffset);
-
-  // Init counts
-  updateCartCount();
-  updateWishCountInUI();
-});
+function closeCheckoutModal() {
+  const modal = document.getElementById('checkoutModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+}
 
 /* --- CART & WISHLIST DRAWERS --- */
 function openCart(){
@@ -393,90 +341,6 @@ function changeQty(index, delta){
   renderCart();
 }
 
-/* Clear & checkout buttons */
-document.getElementById('clearCartBtn')?.addEventListener('click', () => {
-  if(!cart.length) return;
-  if(!confirm('Clear entire cart?')) return;
-  cart.splice(0, cart.length);
-  localStorage.setItem('dm_cart', JSON.stringify(cart));
-  renderCart();
-});
-
-document.getElementById('checkoutBtn')?.addEventListener('click', () => {
-  if (!cart.length) {
-    alert('Cart is empty');
-    return;
-  }
-
-  const whatsappNumber = '916381602251';
-
-  let message = '🛍️ *New Dearly Made Order*\n\n';
-  let grandTotal = 0;
-
-  cart.forEach((item, index) => {
-    const p = products.find(x => x.id === item.id) || item;
-    const qty = item.qty || 1;
-
-    const baseAmount = item.price * qty;
-    const wrapAmount = item.wrap ? WRAP_PRICE * qty : 0;
-    const lineTotal = baseAmount + wrapAmount;
-
-    grandTotal += lineTotal;
-
-    message += '----------------------------\n';
-    message += `🧾 *_Item ${index + 1}_*: *${p.title}*\n`;
-    message += `*Qty:* ${qty}\n`;
-    message += `*Price:* ₹${item.price}\n`;
-    message += `*Base Total:* ₹${baseAmount}\n`;
-
-    if (item.wrap) {
-      message += `*Gift Wrap:* Yes *(₹${WRAP_PRICE} x ${qty} = ₹${wrapAmount})*\n`;
-    } else {
-      message += `*Gift Wrap:* No\n`;
-    }
-
-    if (item.color) message += `*Color:* _${item.color}_\n`;
-    if (item.name)  message += `*Name:* ${item.name}\n`;
-    if (item.msg)   message += `*Message:* ${item.msg}\n`;
-
-    message += `*Line Total:* *₹${lineTotal}*\n`;
-
-    if (item.hasPhoto) {
-      message += `*Photo:* Yes (file: ${item.photoName || 'uploaded by customer'})\n`;
-    } else {
-      message += '*Photo:* No\n';
-    }
-
-    message += '\n';
-  });
-
-  message += '----------------------------\n';
-  message += `*Grand Total (incl. gift wrap):* *₹${grandTotal}*\n\n`;
-  message += '_Please confirm the details and upload photos (if any) here._';
-
-  const encoded = encodeURIComponent(message);
-  const waUrl = `https://wa.me/${whatsappNumber}?text=${encoded}`;
-
-  // Open WhatsApp
-  window.open(waUrl, '_blank');
-
-  // ✅ Clear cart after opening WhatsApp
-  cart.splice(0, cart.length);
-  localStorage.setItem('dm_cart', JSON.stringify(cart));
-
-  // Update cart UI
-  updateCartCount();
-  const listEl = document.getElementById('cartList');
-  const summaryEl = document.getElementById('cartSummary');
-  const totalCountEl = document.getElementById('cartTotalCount');
-
-  if (listEl) {
-    listEl.innerHTML = '<div class="muted" style="padding:12px; text-align:center; margin-top:20px;">Your cart is empty.</div>';
-  }
-  if (summaryEl) summaryEl.textContent = 'Total: ₹0';
-  if (totalCountEl) totalCountEl.textContent = '0';
-});
-
 /* WISHLIST RENDERING */
 function renderWish(){
   const listEl = document.getElementById('wishList');
@@ -542,6 +406,250 @@ function setHeaderOffset() {
   root.style.setProperty('--header-offset', offset + 'px');
 }
 
-/* ATTACH ICON BUTTON HANDLERS */
-document.getElementById('cartBtn')?.addEventListener('click', openCart);
-document.getElementById('wishlistBtn')?.addEventListener('click', openWish);
+/* --- UPI + WHATSAPP HELPERS (used by listeners) --- */
+
+// 👉 SET YOUR REAL UPI ID HERE
+const UPI_ID = 'yourupiid@upi';       // e.g. 'dearlymade@ibl'
+const MERCHANT_NAME = 'Dearly Made';
+
+function handleGenerateQrClick() {
+  if (!cart.length) {
+    alert('Cart is empty');
+    return;
+  }
+
+  const amount = calculateCartTotal();
+  if (!amount || amount <= 0) {
+    alert('Cart total is invalid.');
+    return;
+  }
+
+  const upiUrl =
+    'upi://pay?pa=' + encodeURIComponent(UPI_ID) +
+    '&pn=' + encodeURIComponent(MERCHANT_NAME) +
+    '&am=' + encodeURIComponent(amount) +
+    '&cu=INR' +
+    '&tn=' + encodeURIComponent('Dearly Made Order');
+
+  const qrBox = document.getElementById('upiQrContainer');
+  if (!qrBox) return;
+
+  qrBox.innerHTML = ''; // clear old QR if any
+  if (typeof QRCode === 'undefined') {
+    qrBox.innerHTML = '<span class="muted">QR library not loaded. Please check your script tag.</span>';
+    return;
+  }
+
+  new QRCode(qrBox, {
+    text: upiUrl,
+    width: 220,
+    height: 220
+  });
+}
+
+function handleConfirmOrderClick() {
+  if (!cart.length) {
+    alert('Cart is empty');
+    return;
+  }
+
+  const fullName = document.getElementById('custFullName')?.value.trim() || '';
+  const address = document.getElementById('custAddress')?.value.trim() || '';
+  const pincode = document.getElementById('custPincode')?.value.trim() || '';
+  const customerWhatsapp = document.getElementById('custWhatsapp')?.value.trim() || '';
+
+  if (!fullName || !address || !pincode || !customerWhatsapp) {
+    alert('Please fill all the customer details.');
+    return;
+  }
+
+  const grandTotal = calculateCartTotal();
+  const whatsappNumber = '916381602251'; // YOUR WhatsApp to receive orders
+
+  let message = '🛍️ *New Dearly Made Order*\n\n';
+
+  // CUSTOMER DETAILS
+  message += '*Customer Details*️\n';
+  message += `*Name:* ${fullName}\n`;
+  message += `*Address:* ${address}\n`;
+  message += `*Pincode:* ${pincode}\n`;
+  message += `*Customer WhatsApp:* ${customerWhatsapp}\n\n`;
+
+  // ORDER ITEMS
+  message += '*Order Items* 📦\n\n';
+
+  cart.forEach((item, index) => {
+    const p = products.find(x => x.id === item.id) || item;
+    const qty = item.qty || 1;
+
+    const baseAmount = item.price * qty;
+    const wrapAmount = item.wrap ? WRAP_PRICE * qty : 0;
+    const lineTotal = baseAmount + wrapAmount;
+
+    message += '----------------------------\n';
+    message += `🧾 *_Item ${index + 1}_*: *${p.title}*\n`;
+    message += `*Qty:* ${qty}\n`;
+    message += `*Price:* ₹${item.price}\n`;
+    message += `*Base Total:* ₹${baseAmount}\n`;
+
+    if (item.wrap) {
+      message += `*Gift Wrap:* Yes *(₹${WRAP_PRICE} x ${qty} = ₹${wrapAmount})*\n`;
+    } else {
+      message += `*Gift Wrap:* No\n`;
+    }
+
+    if (item.color) message += `*Color:* _${item.color}_\n`;
+    if (item.name)  message += `*Name on product:* ${item.name}\n`;
+    if (item.msg)   message += `*Message on product:* ${item.msg}\n`;
+
+    message += `*Line Total:* *₹${lineTotal}*\n`;
+
+    if (item.hasPhoto) {
+      message += `*Photo:* Yes (file: ${item.photoName || 'to be sent by customer'})\n`;
+    } else {
+      message += '*Photo:* No\n';
+    }
+
+    message += '\n';
+  });
+
+  message += '----------------------------\n';
+  message += `*Grand Total (incl. gift wrap):* *₹${grandTotal}*\n\n`;
+  message += '_Customer says payment is completed via UPI QR. Please verify in your UPI app._';
+
+  const encoded = encodeURIComponent(message);
+  const waUrl = `https://wa.me/${whatsappNumber}?text=${encoded}`;
+  window.open(waUrl, '_blank');
+
+  // CLEAR CART
+  cart.splice(0, cart.length);
+  localStorage.setItem('dm_cart', JSON.stringify(cart));
+  updateCartCount();
+  renderCart();
+  closeCheckoutModal();
+}
+
+/* --- PAGE INIT --- */
+document.addEventListener('DOMContentLoaded', () => {
+  const searchEl = document.getElementById('searchInput');
+  const isShopPage = window.location.pathname.toLowerCase().includes('shop');
+  let initialQuery = '';
+
+  if (isShopPage) {
+    const params = new URLSearchParams(window.location.search);
+    initialQuery = params.get('search') || params.get('q') || '';
+  }
+
+  // INITIAL RENDER
+  if (isShopPage) {
+    if (initialQuery) {
+      if (searchEl) searchEl.value = initialQuery;
+      const qLower = initialQuery.toLowerCase();
+      const res = products.filter(p =>
+        (p.title + p.short + p.category).toLowerCase().includes(qLower)
+      );
+      renderProducts(res);
+    } else {
+      renderProducts(products);
+    }
+  } else {
+    // Home page: show first 6 as "Bestsellers"
+    renderProducts(products.slice(0, 6));
+  }
+
+  // SEARCH BEHAVIOUR
+  if (searchEl){
+    if (isShopPage) {
+      searchEl.addEventListener('input', function(e){
+        const q = e.target.value.trim().toLowerCase();
+        if(!q){
+          renderProducts(products);
+          return;
+        }
+        const res = products.filter(p =>
+          (p.title + p.short + p.category).toLowerCase().includes(q)
+        );
+        renderProducts(res);
+      });
+    } else {
+      searchEl.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') {
+          const q = e.target.value.trim();
+          if (!q) return;
+          window.location.href = 'shop.html?search=' + encodeURIComponent(q);
+        }
+      });
+    }
+  }
+
+  // Email join
+  window.joinEmail = function(){
+    const emailInput = document.getElementById('emailJoin');
+    const email = emailInput?.value.trim();
+    if(!email || !email.includes('@')){
+      alert('Please enter a valid email.');
+      return;
+    }
+    alert('Thanks! We will send cute ideas to ' + email);
+    if(emailInput) emailInput.value = '';
+  };
+
+  // Pack builder placeholder
+  window.openBuilder = function(){
+    alert('Gift Pack Builder coming soon');
+  };
+
+  // Modal overlay close & ESC
+  const productModal = document.getElementById('productModal');
+  if(productModal){
+    productModal.addEventListener('click', function(e){
+      if(e.target === this) closeModal();
+    });
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') {
+      closeModal();
+      closeCheckoutModal();
+    }
+  });
+
+  // Lazy-load images
+  window.addEventListener('load', () => {
+    document.querySelectorAll('img').forEach(img => {
+      img.loading = 'lazy';
+    });
+  });
+
+  // Header offset
+  setHeaderOffset();
+  window.addEventListener('resize', setHeaderOffset);
+
+  // Init counts
+  updateCartCount();
+  updateWishCountInUI();
+
+  // Attach icon button handlers
+  document.getElementById('cartBtn')?.addEventListener('click', openCart);
+  document.getElementById('wishlistBtn')?.addEventListener('click', openWish);
+
+  // Clear + Checkout buttons
+  document.getElementById('clearCartBtn')?.addEventListener('click', () => {
+    if(!cart.length) return;
+    if(!confirm('Clear entire cart?')) return;
+    cart.splice(0, cart.length);
+    localStorage.setItem('dm_cart', JSON.stringify(cart));
+    renderCart();
+  });
+
+  document.getElementById('checkoutBtn')?.addEventListener('click', () => {
+    if (!cart.length) {
+      alert('Cart is empty');
+      return;
+    }
+    openCheckoutModal();
+  });
+
+  // ✅ Attach QR + Confirm listeners *after* DOM + modal exist
+  document.getElementById('generateQrBtn')?.addEventListener('click', handleGenerateQrClick);
+  document.getElementById('confirmOrderBtn')?.addEventListener('click', handleConfirmOrderClick);
+});

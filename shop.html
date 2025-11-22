@@ -9,7 +9,6 @@
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
-
   <!-- Shared CSS -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -165,10 +164,65 @@
   </div>
 
   <!-- SHARED JS -->
+  <script async src="//www.instagram.com/embed.js"></script>
   <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <br>
   <br>
   <br>
+  <!-- CHECKOUT DETAILS + UPI QR MODAL -->
+<div class="modal" id="checkoutModal" aria-hidden="true">
+  <div class="modal-dialog" role="dialog" aria-modal="true" style="max-width:640px;">
+    <div class="product-info">
+      <h2 style="margin-top:0">Checkout Details</h2>
+      <p class="muted">Please fill your details and pay using the UPI QR. Then tap “I have paid” to send us your order on WhatsApp.</p>
+
+      <div class="customize">
+        <h4 style="margin:0 0 8px 0">Customer details</h4>
+
+        <div class="field">
+          <label style="min-width:90px">Full Name</label>
+          <input id="custFullName" type="text" placeholder="Your full name" />
+        </div>
+
+        <div class="field">
+          <label style="min-width:90px">Address</label>
+          <textarea id="custAddress" rows="3" placeholder="House no, street, area, city"></textarea>
+        </div>
+
+        <div class="field">
+          <label style="min-width:90px">Pincode</label>
+          <input id="custPincode" type="text" placeholder="e.g. 641014" />
+        </div>
+
+        <div class="field">
+          <label style="min-width:90px">WhatsApp No.</label>
+          <input id="custWhatsapp" type="tel" placeholder="10-digit mobile number" />
+        </div>
+      </div>
+
+      <div class="customize" style="margin-top:16px">
+        <h4 style="margin:0 0 8px 0">Payment via UPI</h4>
+        <p id="upiAmountText" class="muted" style="margin-bottom:8px">
+          Order Total: ₹0
+        </p>
+        <div id="upiQrContainer" style="display:flex;justify-content:center;align-items:center;min-height:220px;border-radius:12px;border:1px dashed #E8DCE9;">
+          <span class="muted">QR will appear here after you click “Generate QR”</span>
+        </div>
+        <p class="muted" style="margin-top:8px;font-size:12px">
+          Scan this QR using any UPI app (GPay / PhonePe / Paytm / BHIM, etc.).
+        </p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:flex-end">
+        <button class="btn btn-outline" type="button" onclick="closeCheckoutModal()">Cancel</button>
+        <button class="btn btn-outline" type="button" id="generateQrBtn">Generate QR</button>
+        <button class="btn btn-primary" type="button" id="confirmOrderBtn">I have paid – Send order</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
 
