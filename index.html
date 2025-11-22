@@ -353,9 +353,16 @@
   </div>
 
   <!-- SCRIPTS -->
-  <script async src="//www.instagram.com/embed.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    (function(){
+      emailjs.init("ocCtzdGjItQ6ZcPY_"); // 👈 paste public key here
+    })();
+  </script>
+
   <script src="script.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 
 
   <br>

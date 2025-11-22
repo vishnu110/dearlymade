@@ -1,4 +1,19 @@
+// =============================
+// CONSTANTS & DATA
+// =============================
 const WRAP_PRICE = 49;
+
+// 👉 UPI details
+const UPI_ID = 'perumalvishnu824@okhdfcbank';
+const MERCHANT_NAME = 'Dearly Made';
+
+// 👉 EmailJS details
+const EMAILJS_PUBLIC_KEY = 'ocCtzdGjItQ6ZcPY_';
+const EMAILJS_SERVICE_ID = 'service_zazd6c9';
+const EMAILJS_TEMPLATE_ID = 'template_yde4v8o';
+
+// OPTIONAL: your own store email for template {{email}}
+const STORE_EMAIL = 'mydearlymade@gmail.com';
 
 /* --- PRODUCT DATA (30 ITEMS) --- */
 const products = [
@@ -47,11 +62,15 @@ const products = [
   {id:30, slug:'massive-combo-pack', title:'Massive Combo Pack', price:1299, category:'combos', img:'img/products/massive combo.png', short:'Bouquet + scrapbook + frame + cards.', customizable:true}
 ];
 
-/* Stored state (shared across pages) */
+// Stored state (shared across pages)
 const cart = JSON.parse(localStorage.getItem('dm_cart') || '[]');
 const wishlist = JSON.parse(localStorage.getItem('dm_wish') || '[]');
 
-/* --- CALCULATE CART TOTAL (incl. gift wrap) --- */
+
+// =============================
+// HELPERS
+// =============================
+
 function calculateCartTotal() {
   let total = 0;
   cart.forEach(item => {
@@ -63,7 +82,6 @@ function calculateCartTotal() {
   return total;
 }
 
-/* --- RENDER PRODUCTS --- */
 function renderProducts(list = products){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
@@ -91,7 +109,7 @@ function renderProducts(list = products){
   });
 }
 
-/* --- MOBILE MENU HANDLERS --- */
+/* Mobile menu */
 function openMobileMenu(){
   const el = document.getElementById('mobileNavDrawer');
   if(!el) return;
@@ -105,12 +123,12 @@ function closeMobileMenu(){
   el.setAttribute('aria-hidden','true');
 }
 
-/* --- NAVIGATION HELPERS --- */
+/* Navigation */
 function goToShopPage(){
   window.location.href = 'shop.html';
 }
 
-/* --- PRODUCT MODAL --- */
+/* Product modal */
 function openModal(id){
   const p = products.find(x => x.id === id);
   if(!p) return;
@@ -144,13 +162,13 @@ function closeModal(){
   modal.setAttribute('aria-hidden','true');
 }
 
-/* --- CART LOGIC --- */
+/* Cart logic */
 function addToCart(id){
   const name = document.getElementById('custName')?.value || '';
   const msg = document.getElementById('custMsg')?.value || '';
   const color = document.getElementById('custColor')?.value || '';
   const wrap = document.getElementById('wrapOpt')?.checked || false;
-  
+
   const photoInput = document.getElementById('custPhoto');
   const photoFile = photoInput && photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
   const photoName = photoFile ? photoFile.name : '';
@@ -184,7 +202,7 @@ function updateCartCount(){
   if(el) el.textContent = cart.length;
 }
 
-/* --- WISHLIST LOGIC --- */
+/* Wishlist logic */
 function toggleWish(id){
   const idx = wishlist.indexOf(id);
   if(idx > -1) {
@@ -202,7 +220,7 @@ function updateWishCountInUI(){
   if(wishCounter) wishCounter.textContent = wishlist.length;
 }
 
-/* --- CHECKOUT MODAL OPEN/CLOSE --- */
+/* Checkout modal */
 function openCheckoutModal() {
   const modal = document.getElementById('checkoutModal');
   if (!modal) return;
@@ -238,7 +256,7 @@ function closeCheckoutModal() {
   modal.setAttribute('aria-hidden', 'true');
 }
 
-/* --- CART & WISHLIST DRAWERS --- */
+/* Cart & wishlist drawers */
 function openCart(){
   const modal = document.getElementById('cartModal');
   if(!modal) return;
@@ -341,7 +359,7 @@ function changeQty(index, delta){
   renderCart();
 }
 
-/* WISHLIST RENDERING */
+/* Wishlist rendering */
 function renderWish(){
   const listEl = document.getElementById('wishList');
   const totalEl = document.getElementById('wishTotalCount');
@@ -396,7 +414,7 @@ function addWishToCart(id){
   alert('Added to cart');
 }
 
-/* HEADER OFFSET */
+/* Header offset */
 function setHeaderOffset() {
   const header = document.querySelector('header');
   const root = document.documentElement;
@@ -406,11 +424,10 @@ function setHeaderOffset() {
   root.style.setProperty('--header-offset', offset + 'px');
 }
 
-/* --- UPI + WHATSAPP HELPERS (used by listeners) --- */
 
-// 👉 SET YOUR REAL UPI ID HERE
-const UPI_ID = 'perumalvishnu824@okhdfcbank';       // e.g. 'dearlymade@ibl'
-const MERCHANT_NAME = 'Dearly Made';
+// =============================
+// UPI + WHATSAPP + EMAILJS
+// =============================
 
 function handleGenerateQrClick() {
   if (!cart.length) {
@@ -447,29 +464,13 @@ function handleGenerateQrClick() {
   });
 }
 
-function handleConfirmOrderClick() {
-  if (!cart.length) {
-    alert('Cart is empty');
-    return;
-  }
-
-  const fullName = document.getElementById('custFullName')?.value.trim() || '';
-  const address = document.getElementById('custAddress')?.value.trim() || '';
-  const pincode = document.getElementById('custPincode')?.value.trim() || '';
-  const customerWhatsapp = document.getElementById('custWhatsapp')?.value.trim() || '';
-
-  if (!fullName || !address || !pincode || !customerWhatsapp) {
-    alert('Please fill all the customer details.');
-    return;
-  }
-
+// Build the text used for BOTH WhatsApp and email order_text
+function buildOrderText(fullName, address, pincode, customerWhatsapp) {
   const grandTotal = calculateCartTotal();
-  const whatsappNumber = '916381602251'; // YOUR WhatsApp to receive orders
-
   let message = '🛍️ *New Dearly Made Order*\n\n';
 
   // CUSTOMER DETAILS
-  message += '*Customer Details*️\n';
+  message += '*Customer Details*️⃣\n';
   message += `*Name:* ${fullName}\n`;
   message += `*Address:* ${address}\n`;
   message += `*Pincode:* ${pincode}\n`;
@@ -517,11 +518,74 @@ function handleConfirmOrderClick() {
   message += `*Grand Total (incl. gift wrap):* *₹${grandTotal}*\n\n`;
   message += '_Customer says payment is completed via UPI QR. Please verify in your UPI app._';
 
-  const encoded = encodeURIComponent(message);
+  return message;
+}
+
+// Send hidden email via EmailJS
+function sendOrderEmail(fullName, address, pincode, customerWhatsapp, orderText) {
+  if (!window.emailjs) {
+    console.warn('EmailJS SDK not loaded');
+    return;
+  }
+
+  // init only once
+  try {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  } catch (e) {
+    // if already initialised, it will just throw; safe to ignore
+  }
+
+  const templateParams = {
+    email: STORE_EMAIL,                 // {{email}}
+    to_name: 'Dearly Made',             // {{to_name}}
+    from_site: 'Dearly Made Website',   // {{from_site}}
+
+    customer_name: fullName,
+    customer_address: address,
+    customer_pincode: pincode,
+    customer_whatsapp: customerWhatsapp,
+
+    order_text: orderText               // {{order_text}}
+  };
+
+  emailjs
+    .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+    .then(function() {
+      console.log('EmailJS: order email sent');
+    })
+    .catch(function(err){
+      console.error('EmailJS error', err);
+    });
+}
+
+function handleConfirmOrderClick() {
+  if (!cart.length) {
+    alert('Cart is empty');
+    return;
+  }
+
+  const fullName = document.getElementById('custFullName')?.value.trim() || '';
+  const address = document.getElementById('custAddress')?.value.trim() || '';
+  const pincode = document.getElementById('custPincode')?.value.trim() || '';
+  const customerWhatsapp = document.getElementById('custWhatsapp')?.value.trim() || '';
+
+  if (!fullName || !address || !pincode || !customerWhatsapp) {
+    alert('Please fill all the customer details.');
+    return;
+  }
+
+  const orderText = buildOrderText(fullName, address, pincode, customerWhatsapp);
+
+  // 1) Open WhatsApp with full message
+  const whatsappNumber = '916381602251'; // YOUR WhatsApp to receive orders
+  const encoded = encodeURIComponent(orderText);
   const waUrl = `https://wa.me/${whatsappNumber}?text=${encoded}`;
   window.open(waUrl, '_blank');
 
-  // CLEAR CART
+  // 2) Hidden Email to you via EmailJS
+  sendOrderEmail(fullName, address, pincode, customerWhatsapp, orderText);
+
+  // 3) Clear cart + close modal
   cart.splice(0, cart.length);
   localStorage.setItem('dm_cart', JSON.stringify(cart));
   updateCartCount();
@@ -529,7 +593,10 @@ function handleConfirmOrderClick() {
   closeCheckoutModal();
 }
 
-/* --- PAGE INIT --- */
+
+// =============================
+// PAGE INIT
+// =============================
 document.addEventListener('DOMContentLoaded', () => {
   const searchEl = document.getElementById('searchInput');
   const isShopPage = window.location.pathname.toLowerCase().includes('shop');
@@ -540,7 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initialQuery = params.get('search') || params.get('q') || '';
   }
 
-  // INITIAL RENDER
+  // Initial product render
   if (isShopPage) {
     if (initialQuery) {
       if (searchEl) searchEl.value = initialQuery;
@@ -553,13 +620,14 @@ document.addEventListener('DOMContentLoaded', () => {
       renderProducts(products);
     }
   } else {
-    // Home page: show first 6 as "Bestsellers"
+    // home page: show 6 bestsellers
     renderProducts(products.slice(0, 6));
   }
 
-  // SEARCH BEHAVIOUR
+  // Search behaviour
   if (searchEl){
     if (isShopPage) {
+      // live filter on shop page
       searchEl.addEventListener('input', function(e){
         const q = e.target.value.trim().toLowerCase();
         if(!q){
@@ -572,6 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProducts(res);
       });
     } else {
+      // home page: Enter → open shop with query
       searchEl.addEventListener('keydown', function(e){
         if (e.key === 'Enter') {
           const q = e.target.value.trim();
@@ -628,11 +697,11 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   updateWishCountInUI();
 
-  // Attach icon button handlers
+  // Icon handlers
   document.getElementById('cartBtn')?.addEventListener('click', openCart);
   document.getElementById('wishlistBtn')?.addEventListener('click', openWish);
 
-  // Clear + Checkout buttons
+  // Clear & checkout
   document.getElementById('clearCartBtn')?.addEventListener('click', () => {
     if(!cart.length) return;
     if(!confirm('Clear entire cart?')) return;
@@ -649,8 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
     openCheckoutModal();
   });
 
-  // ✅ Attach QR + Confirm listeners *after* DOM + modal exist
+  // QR + Confirm
   document.getElementById('generateQrBtn')?.addEventListener('click', handleGenerateQrClick);
   document.getElementById('confirmOrderBtn')?.addEventListener('click', handleConfirmOrderClick);
 });
-
