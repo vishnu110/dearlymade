@@ -409,7 +409,7 @@ function setHeaderOffset() {
 /* --- UPI + WHATSAPP HELPERS (used by listeners) --- */
 
 // 👉 SET YOUR REAL UPI ID HERE
-const UPI_ID = 'yourupiid@upi';       // e.g. 'dearlymade@ibl'
+const UPI_ID = 'perumalvishnu824@okhdfcbank';       // e.g. 'dearlymade@ibl'
 const MERCHANT_NAME = 'Dearly Made';
 
 function handleGenerateQrClick() {
@@ -653,3 +653,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('generateQrBtn')?.addEventListener('click', handleGenerateQrClick);
   document.getElementById('confirmOrderBtn')?.addEventListener('click', handleConfirmOrderClick);
 });
+
