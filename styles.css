@@ -422,11 +422,12 @@ footer{
   max-width:980px;
   width:100%;
   display:grid;
-  grid-template-columns:420px 1fr;
+  grid-template-columns:570px 1fr;
   gap:20px;
   padding:18px;
   max-height: 90vh;
   overflow: auto;
+  justify-content: center;
 }
 
 .gallery img{
@@ -515,6 +516,7 @@ footer{
     overflow-x: hidden;
     border-radius: 12px;
     text-align: center;
+  
   }
 
   .gallery img {
